@@ -1,28 +1,7 @@
 require_relative 'questions_database.rb'
+require_relative 'model.rb'
 
-class User
-  def self.all
-    raw_data = QuestionsDatabase.instance.execute('SELECT * FROM users')
-    users = []
-    raw_data.each do |row|
-      users << User.new(row)
-    end
-    users
-  end
-
-  def self.find_by_id(id)
-    raw_data = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        users
-      WHERE
-        users.id = ?
-    SQL
-
-    User.new(raw_data.first)
-  end
-
+class User < Model
   def self.find_by_name(fname, lname)
     raw_data = QuestionsDatabase.instance.execute(<<-SQL, fname, lname)
       SELECT
@@ -41,15 +20,15 @@ class User
     users
   end
 
+  def self.table_name
+    'users'
+  end
+
   attr_accessor :fname, :lname
   attr_reader :id
 
   def initialize(attrs = {})
     @id, @fname, @lname = attrs['id'], attrs['fname'], attrs['lname']
-  end
-
-  def save
-    @id = QuestionsDatabase.save('users', @id, instance_variables, params)
   end
 
   def authored_questions

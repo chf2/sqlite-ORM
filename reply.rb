@@ -1,28 +1,7 @@
 require_relative 'questions_database.rb'
+require_relative 'model.rb'
 
-class Reply
-  def self.all
-    raw_data = QuestionsDatabase.instance.execute('SELECT * FROM replies')
-    replies = []
-    raw_data.each do |row|
-      replies << Reply.new(row)
-    end
-    replies
-  end
-
-  def self.find_by_id(id)
-    raw_data = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        replies
-      WHERE
-        replies.id = ?
-    SQL
-
-    Reply.new(raw_data.first)
-  end
-
+class Reply < Model
   def self.find_by_user_id(user_id)
     raw_data = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT
@@ -57,6 +36,10 @@ class Reply
     end
 
     replies
+  end
+
+  def self.table_name
+    'replies'
   end
 
   attr_accessor :body
@@ -96,12 +79,6 @@ class Reply
   def question
     Question.find_by_id(@question_id)
   end
-
-  def save
-    @id = QuestionsDatabase.save('replies', @id, instance_variables, params)
-  end
-
-
 
   def params
     [@question_id, @parent_id, @user_id, @body, @id]

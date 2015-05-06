@@ -1,28 +1,7 @@
 require_relative 'questions_database.rb'
+require_relative 'model.rb'
 
-class QuestionFollow
-  def self.all
-    raw_data = QuestionsDatabase.instance.execute('SELECT * FROM question_follows')
-    question_follows = []
-    raw_data.each do |row|
-      question_follows << QuestionFollow.new(row)
-    end
-    question_follows
-  end
-
-  def self.find_by_id(id)
-    raw_data = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        question_follows
-      WHERE
-        question_follows.id = ?
-    SQL
-
-    QuestionFollow.new(raw_data.first)
-  end
-
+class QuestionFollow < Model
   def self.followers_for_question_id(question_id)
     followers = QuestionsDatabase.instance.execute(<<-SQL, question_id)
       SELECT
@@ -67,6 +46,10 @@ class QuestionFollow
     SQL
 
     questions.map { |q_hash| Question.new(q_hash) }
+  end
+
+  def self.table_name
+    'question_follows'
   end
 
   def initialize(attrs = {})

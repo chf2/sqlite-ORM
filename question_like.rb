@@ -1,28 +1,7 @@
 require_relative 'questions_database.rb'
+require_relative 'model.rb'
 
-class QuestionLike
-  def self.all
-    raw_data = QuestionsDatabase.instance.execute('SELECT * FROM question_likes')
-    question_likes = []
-    raw_data.each do |row|
-      question_likes << QuestionLike.new(row)
-    end
-    question_likes
-  end
-
-  def self.find_by_id(id)
-    raw_data = QuestionsDatabase.instance.execute(<<-SQL, id)
-      SELECT
-        *
-      FROM
-        question_likes
-      WHERE
-        question_likes.id = ?
-    SQL
-
-    QuestionLike.new(raw_data.first)
-  end
-
+class QuestionLike < Model
   def self.liked_questions_for_user_id(user_id)
     liked_qs = QuestionsDatabase.instance.execute(<<-SQL, user_id)
       SELECT
@@ -81,7 +60,10 @@ class QuestionLike
 
     questions.map { |q_hash| Question.new(q_hash) }
   end
-  # attr_reader :id, :question_id, :parent_id, :user_id, :body
+
+  def self.table_name
+    'question_likes'
+  end
 
   def initialize(attrs = {})
     @id, @question_id, @user_id =
