@@ -40,9 +40,12 @@ class QuestionFollow < Model
         question_follows
       INNER JOIN
         questions ON questions.id = question_follows.question_id
-      GROUP BY question_id
-      ORDER BY COUNT(*) desc
-      LIMIT ?
+      GROUP BY 
+        question_id
+      ORDER BY 
+        COUNT(*) desc
+      LIMIT 
+        ?
     SQL
 
     questions.map { |q_hash| Question.new(q_hash) }
@@ -53,7 +56,8 @@ class QuestionFollow < Model
   end
 
   def initialize(attrs = {})
-    @id, @user_id, @question_id =
-      attrs['id'], attrs['user_id'], attrs['question_id']
+    @id = attrs['id']
+    @user_id = attrs['user_id']
+    @question_id = attrs['question_id']
   end
 end

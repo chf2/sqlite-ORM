@@ -53,9 +53,12 @@ class QuestionLike < Model
         question_likes
       INNER JOIN
         questions ON question_likes.question_id = questions.id
-      GROUP BY question_likes.question_id
-      ORDER BY COUNT(*) desc
-      LIMIT ?
+      GROUP BY 
+        question_likes.question_id
+      ORDER BY 
+        COUNT(*) desc
+      LIMIT 
+        ?
     SQL
 
     questions.map { |q_hash| Question.new(q_hash) }
@@ -66,7 +69,8 @@ class QuestionLike < Model
   end
 
   def initialize(attrs = {})
-    @id, @question_id, @user_id =
-      attrs['id'], attrs['question_id'], attrs['user_id']
+    @id = attrs['id']
+    @user_id = attrs['user_id']
+    @question_id = attrs['question_id']
   end
 end

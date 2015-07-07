@@ -8,9 +8,7 @@ class Model
       FROM
         #{self.table_name}
     SQL
-    objects = []
-    raw_data.each { |row| objects << self.new(row) }
-    objects
+    raw_data.each_with_object([]) { |row, objs| objs << self.new(row) }
   end
 
   def self.find_by_id(id)
@@ -27,16 +25,16 @@ class Model
   end
 
   def save
-    c_names = instance_variables.map { |name| name.to_s[1..-1] }
-    name_string = "(#{c_names[1..-1].join(', ')})"
+    col_names = instance_variables.map { |name| name.to_s[1..-1] }
+    name_string = "(#{col_names[1..-1].join(', ')})"
     value_string = "("
-    (c_names.size-2).times { value_string << "?, " }
+    (col_names.size-2).times { value_string << "?, " }
     value_string += " ?)"
 
-    col_string = c_names.drop(1).join(' = ?, ') + ' = ?'
+    col_string = col_names.drop(1).join(' = ?, ') + ' = ?'
 
     if @id.nil?
-      QuestionsDatabase.instance.execute(<<-SQL, *params[0..-2])
+      QuestionsDatabase.instance.execute(<<-SQL, *params[0...-1])
         INSERT INTO
           #{self.class.table_name} #{name_string}
         VALUES
