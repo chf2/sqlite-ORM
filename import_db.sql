@@ -61,7 +61,7 @@ INSERT INTO
   replies(question_id, parent_id, user_id, body)
 VALUES
   (2, NULL, 2, 'The internet!'),
-  (2, 1, 1, 'Thats awesome!');
+  (2, 1, 1, 'Thats awesome!!');
 
 INSERT INTO
   question_likes(question_id, user_id)
